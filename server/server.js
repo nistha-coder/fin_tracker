@@ -2,12 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
-
-// Import routes
-const authRoutes = require('./routes/auth.routes');
-const categoryRoutes = require('./routes/category.routes');
-const transactionRoutes = require('./routes/transaction.routes');
-const dashboardRoutes = require('./routes/dashboard.routes');
+const path = require('path');
 
 const app = express();
 
@@ -19,18 +14,39 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// Import routes
+const authRoutes = require('./routes/auth.routes');
+const categoryRoutes = require('./routes/category.routes');
+const transactionRoutes = require('./routes/transaction.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
+
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// Health check route
-app.get('/', (req, res) => {
+// ---------------------------
+// ✅ Serve frontend static files (React build)
+// ---------------------------
+const buildPath = path.join(__dirname, '../client/build');
+app.use(express.static(buildPath));
+
+// ✅ Catch-all route for SPA (for React Router)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html'));
+});
+
+// ---------------------------
+// Health check (optional)
+// ---------------------------
+app.get('/api/health', (req, res) => {
   res.json({ message: 'FinTrack API is running!' });
 });
 
+// ---------------------------
 // Error handling middleware
+// ---------------------------
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
@@ -40,8 +56,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-
+// ---------------------------
+// Start Server
+// ---------------------------
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`✅ Server is running on port ${PORT}`);
 });
