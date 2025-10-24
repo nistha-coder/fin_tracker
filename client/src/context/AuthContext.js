@@ -1,91 +1,91 @@
-
-import { createContext, useState, useEffect, useContext } from 'react';
-import api from '../api/axiosConfig'; // <-- Import our new api instance
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
 };
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Add a loading state
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Check if user is already logged in (via cookie) when app loads
+  // Check if user is logged in on mount
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        // The server will check the cookie and return the user
-        const res = await api.get('/auth/profile');
-        setUser(res.data);
-      } catch (err) {
-        // No valid cookie, user is not logged in
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuthStatus();
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+    setLoading(false);
   }, []);
 
-  // Helper to extract error messages from Axios
-  const getErrorMessage = (error) => {
-    if (error.response && error.response.data && error.response.data.message) {
-      return error.response.data.message;
+  // Register user
+  // --- FIX #1: Changed 'name' to 'username' to match SignupPage and Backend ---
+  // --- FIX #2: Changed URL to '/api/auth/register' to use the proxy ---
+  const register = async (username, email, password) => {
+    try {
+      const response = await axios.post('/api/auth/register', {
+        username,
+        email,
+        password,
+      });
+
+      if (response.data.success) {
+        localStorage.setItem('user', JSON.stringify(response.data.data));
+        setUser(response.data.data);
+        toast.success('Registration successful!');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Registration failed');
+      throw error;
     }
-    return error.message || 'An unknown error occurred.';
   };
 
+  // Login user
+  // --- FIX #3: Changed URL to '/api/auth/login' to use the proxy ---
   const login = async (email, password) => {
     try {
-      const res = await api.post('/auth/login', { email, password });
-      setUser(res.data); // Set user from response
-      toast.success('Logged in successfully!');
-      return res.data; // Return user data to page
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-      throw err; // Re-throw error for the page to handle
+      const response = await axios.post('/api/auth/login', {
+        email,
+        password,
+      });
+
+      if (response.data.success) {
+        localStorage.setItem('user', JSON.stringify(response.data.data));
+        setUser(response.data.data);
+        toast.success('Login successful!');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Login failed');
+      throw error;
     }
   };
 
-  const signup = async (name, email, password) => {
-    try {
-      const res = await api.post('/auth/signup', { name, email, password });
-      setUser(res.data); // Set user from response
-      toast.success('Account created successfully!');
-      return res.data; // Return user data to page
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-      throw err; // Re-throw error for the page to handle
-    }
+  // Logout user
+  const logout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    toast.success('Logged out successfully');
+    navigate('/');
   };
 
-  const logout = async () => {
-    try {
-      await api.post('/auth/logout');
-      setUser(null);
-      toast.success('Logged out successfully.');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
-  };
-
-  // Provide the context value
   const value = {
     user,
-    loading, // Provide loading state
+    loading,
+    register, // This function is named 'register'
     login,
-    signup,
     logout,
   };
 
-  // Don't render children until we've checked auth status
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

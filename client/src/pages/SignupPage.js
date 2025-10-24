@@ -1,84 +1,150 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Use our new hook
+import { Link, useNavigate } from 'react-router-dom';
+import { FaWallet, FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 
 const SignupPage = () => {
-  const { signup } = useAuth();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { register} = useAuth(); // Assuming you have a signup function in your context
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password.length < 6) {
-        // You can use toast here if you like
-        alert('Password must be at least 6 characters long.');
-        return;
-    }
-    setIsLoading(true);
+    setLoading(true);
+    setError('');
+
     try {
-      await signup(name, email, password);
-      // The toast is now in AuthContext!
-      navigate('/dashboard'); // redirect to dashboard
-    } catch (err) {
-      // The toast is already shown by AuthContext
+      await register(formData.username, formData.email, formData.password);
+      // On successful signup, navigate to the dashboard or login page
+      navigate('/dashboard'); 
+    } catch (error) {
+      console.error('Signup error:', error);
+      // Set a user-friendly error message
+      setError('Failed to create account. Email may already be in use.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold mb-6 text-center">Create an Account</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)} // <-- THE FIX IS HERE
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password (min. 6 characters)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            required
-          />
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition disabled:bg-purple-300"
-          >
-            {isLoading ? 'Creating Account...' : 'Sign Up'}
-          </button>
-        </form>
-        <p className="text-center mt-4 text-gray-500">
-          Already have an account?{' '}
-          <span
-            className="text-purple-600 cursor-pointer hover:underline"
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </span>
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-primary-500 via-purple-600 to-secondary-500 flex items-center justify-center px-4 py-12">
+      <div className="max-w-md w-full">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-lg rounded-3xl mb-4">
+            <FaWallet className="text-4xl text-white" />
+          </div>
+          <h2 className="text-4xl font-bold text-white mb-2">Create Account</h2>
+          <p className="text-white/80">Start tracking your finances today.</p>
+        </div>
+
+        {/* Signup Form */}
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* Username Field */}
+            <div className="relative">
+              <label
+                htmlFor="username"
+                className="absolute -top-2 left-4 px-1 bg-transparent text-white/80 text-xs"
+              >
+                Username
+              </label>
+              <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+              <input
+                type="text"
+                name="username"
+                id="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="your_username"
+                required
+                className="w-full pl-12 pr-4 py-3 bg-white/20 text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-white/50"
+              />
+            </div>
+
+            {/* Email Field */}
+            <div className="relative">
+              <label
+                htmlFor="email"
+                className="absolute -top-2 left-4 px-1 bg-transparent text-white/80 text-xs"
+              >
+                Email Address
+              </label>
+              <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+              <input
+                type="email"
+                name="email"
+                id="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                required
+                className="w-full pl-12 pr-4 py-3 bg-white/20 text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-white/50"
+              />
+            </div>
+
+            {/* Password Field */}
+            <div className="relative">
+              <label
+                htmlFor="password"
+                className="absolute -top-2 left-4 px-1 bg-transparent text-white/80 text-xs"
+              >
+                Password
+              </label>
+              <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+              <input
+                type="password"
+                name="password"
+                id="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+                minLength="6" // Good practice to add minLength
+                className="w-full pl-12 pr-4 py-3 bg-white/20 text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-white/50"
+              />
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <p className="text-center text-red-400 text-sm">{error}</p>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-white text-purple-600 font-bold rounded-lg shadow-lg hover:bg-white/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </button>
+          </form>
+
+          {/* Login Link */}
+          <p className="text-center text-white/80 mt-6">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="font-bold text-white hover:underline"
+            >
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
 export default SignupPage;
-

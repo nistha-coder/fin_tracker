@@ -8,6 +8,10 @@ const {
   updateTransaction,
   deleteTransaction,
 } = require('../controllers/transaction.controller');
+const { protect } = require('../middleware/auth.middleware');
+
+// All routes are protected - require authentication
+router.use(protect);
 
 // GET /api/transactions - Get all transactions
 router.get('/', getAllTransactions);

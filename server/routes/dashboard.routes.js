@@ -4,6 +4,10 @@ const {
   getDashboardStats,
   getIncomeExpenseOverTime,
 } = require('../controllers/dashboard.controller');
+const { protect } = require('../middleware/auth.middleware');
+
+// All routes are protected - require authentication
+router.use(protect);
 
 // GET /api/dashboard/stats - Get dashboard statistics
 router.get('/stats', getDashboardStats);

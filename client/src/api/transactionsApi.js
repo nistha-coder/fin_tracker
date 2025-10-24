@@ -1,11 +1,12 @@
-import axios from 'axios';
+import api from './axiosConfig';
+
 
 const API_URL = 'http://localhost:5000/api';
 
 // Get all transactions
 export const getAllTransactions = async () => {
   try {
-    const response = await axios.get(`${API_URL}/transactions`);
+    const response = await api.get(`${API_URL}/transactions`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -15,7 +16,7 @@ export const getAllTransactions = async () => {
 // Get recent transactions
 export const getRecentTransactions = async (limit = 10) => {
   try {
-    const response = await axios.get(`${API_URL}/transactions/recent?limit=${limit}`);
+    const response = await api.get(`${API_URL}/transactions/recent?limit=${limit}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -25,7 +26,7 @@ export const getRecentTransactions = async (limit = 10) => {
 // Get transaction by ID
 export const getTransactionById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/transactions/${id}`);
+    const response = await api.get(`${API_URL}/transactions/${id}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -35,7 +36,7 @@ export const getTransactionById = async (id) => {
 // Create a new transaction
 export const createTransaction = async (transactionData) => {
   try {
-    const response = await axios.post(`${API_URL}/transactions`, transactionData);
+    const response = await api.post(`${API_URL}/transactions`, transactionData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -45,7 +46,7 @@ export const createTransaction = async (transactionData) => {
 // Update a transaction
 export const updateTransaction = async (id, transactionData) => {
   try {
-    const response = await axios.put(`${API_URL}/transactions/${id}`, transactionData);
+    const response = await api.put(`${API_URL}/transactions/${id}`, transactionData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -55,7 +56,7 @@ export const updateTransaction = async (id, transactionData) => {
 // Delete a transaction
 export const deleteTransaction = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/transactions/${id}`);
+    const response = await api.delete(`${API_URL}/transactions/${id}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -65,7 +66,7 @@ export const deleteTransaction = async (id) => {
 // Get dashboard stats
 export const getDashboardStats = async () => {
   try {
-    const response = await axios.get(`${API_URL}/dashboard/stats`);
+    const response = await api.get(`${API_URL}/dashboard/stats`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
