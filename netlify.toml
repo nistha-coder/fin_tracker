@@ -1,7 +1,10 @@
 [build]
   base = "client"
-  publish = "client/build"
+  publish = "build"
   command = "npm run build"
+
+# Remove or comment out functions setting unless you use Netlify Functions:
+# functions = "my_functions"
 
 [[redirects]]
   from = "/api/*"
