@@ -1,4 +1,4 @@
-//dashoard.controller.js
+//dashboard.controller.js
 const Transaction = require('../models/transaction.model');
 
 // Get dashboard statistics (for logged-in user only)
@@ -10,8 +10,12 @@ const getDashboardStats = async (req, res) => {
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
     // Get all-time total balance (for this user only)
+    // Income transactions have positive amounts, expenses have negative amounts
     const allTransactions = await Transaction.find({ user: req.user.id });
-    const totalBalance = allTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const totalBalance = allTransactions.reduce((sum, t) => {
+      // Amount is already stored correctly: positive for income, negative for expense
+      return sum + t.amount;
+    }, 0);
 
     // Get month-to-date income (for this user only)
     const monthlyIncome = await Transaction.aggregate([

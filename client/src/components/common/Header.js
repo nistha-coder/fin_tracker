@@ -1,12 +1,21 @@
+//header.js
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaWallet, FaChartLine, FaTags } from 'react-icons/fa';
+import { FaWallet, FaChartLine, FaTags, FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
   const location = useLocation();
+  const { logout, user } = useAuth();
 
   const isActive = (path) => {
     return location.pathname === path;
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      logout();
+    }
   };
 
   return (
@@ -24,7 +33,12 @@ const Header = () => {
           </Link>
 
           {/* Navigation */}
-          <nav className="flex space-x-2">
+          <div className="flex items-center space-x-2">
+            {/* User Name */}
+            <span className="hidden md:block text-gray-700 font-medium mr-2">
+              {user?.name}
+            </span>
+
             <Link
               to="/dashboard"
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
@@ -34,8 +48,9 @@ const Header = () => {
               }`}
             >
               <FaChartLine className="text-lg" />
-              <span>Dashboard</span>
+              <span className="hidden md:block">Dashboard</span>
             </Link>
+            
             <Link
               to="/categories"
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
@@ -45,9 +60,18 @@ const Header = () => {
               }`}
             >
               <FaTags className="text-lg" />
-              <span>Manage Categories</span>
+              <span className="hidden md:block">Manage Categories</span>
             </Link>
-          </nav>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              <FaSignOutAlt className="text-lg" />
+              <span className="hidden md:block">Logout</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>
