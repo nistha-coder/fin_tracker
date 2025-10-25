@@ -4,8 +4,11 @@ import axios from 'axios';
 
 // Create a new Axios instance
 const api = axios.create({
-  // Your proxy in package.json handles the base URL (http://localhost:5000)
-  // so we can just use relative paths here.
+  // ✅ Add your live backend base URL
+  baseURL: 'https://fin-tracker-2-odkq.onrender.com/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // Add a request interceptor
@@ -20,17 +23,14 @@ api.interceptors.request.use(
       const token = user.token;
 
       if (token) {
-        // 3. If the token exists, add it to the Authorization header
+        // 3. Add token to Authorization header
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
-    // 4. Return the modified config
+    // 4. Return modified config
     return config;
   },
-  (error) => {
-    // Handle request errors
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default api;
