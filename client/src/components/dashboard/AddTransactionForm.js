@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { createTransaction } from '../../api/transactionsApi';
@@ -16,11 +16,7 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadCategories();
-  }, [formData.type]);
-
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const response = await getCategoriesByType(formData.type);
       setCategories(response.data);
@@ -30,7 +26,11 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
     } catch (error) {
       console.error('Error loading categories:', error);
     }
-  };
+  }, [formData.type]);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +39,7 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.description || !formData.amount || !formData.category) {
       toast.error('Please fill in all fields');
       return;
@@ -70,7 +70,6 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
         <FaPlus className="mr-3 text-primary-500" />
         Add New Transaction
       </h2>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Description */}
@@ -87,7 +86,6 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none"
             />
           </div>
-
           {/* Amount */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -105,7 +103,6 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
             />
           </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Type */}
           <div>
@@ -137,7 +134,6 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
               </label>
             </div>
           </div>
-
           {/* Category */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -158,7 +154,6 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
             </select>
           </div>
         </div>
-
         {/* Date */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -172,7 +167,6 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none"
           />
         </div>
-
         {/* Submit Button */}
         <button
           type="submit"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import OverviewStats from '../components/dashboard/OverviewStats';
 import AddTransactionForm from '../components/dashboard/AddTransactionForm';
 import RecentTransactionList from '../components/dashboard/RecentTransactionList';
@@ -17,11 +17,7 @@ const DashboardPage = () => {
   } = useAppContext();
   const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, [refreshKey]);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     setLoading(true);
     try {
       const [statsResponse, transactionsResponse] = await Promise.all([
@@ -35,7 +31,11 @@ const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setLoading, setStats, setTransactions]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [refreshKey, loadDashboardData]);
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
@@ -55,35 +55,19 @@ const DashboardPage = () => {
         <h1 className="text-4xl font-bold text-green-100 mb-8 text-center drop-shadow-lg">
           💰 Financial Dashboard
         </h1>
-
-        {/* --- UI CHANGE 1 ---
-            OverviewStats remains at the top for high visibility. */}
         <OverviewStats stats={stats} />
-
-        {/* --- UI CHANGE 2 ---
-            A new grid to place the Form and Pie Chart side-by-side.
-            On large screens (lg): 2/3 for the chart, 1/3 for the form.
-            On small screens (default): They stack vertically. */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 my-8">
-          
-          {/* Main content area (Chart) */}
           <div className="lg:col-span-2">
             <SpendingPieChart spendingByCategory={stats.spendingByCategory} />
           </div>
-
-          {/* Sidebar area (Form) */}
           <div className="lg:col-span-1">
             <AddTransactionForm onTransactionAdded={handleRefresh} />
           </div>
         </div>
-
-        {/* --- UI CHANGE 3 ---
-            RecentTransactionList is now at the bottom, full-width. */}
         <RecentTransactionList
           transactions={transactions}
           onTransactionDeleted={handleRefresh}
         />
-        
       </div>
     </div>
   );
