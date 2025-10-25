@@ -1,3 +1,5 @@
+//category.route.js
+
 const express = require('express');
 const router = express.Router();
 const {
@@ -7,6 +9,10 @@ const {
   updateCategory,
   deleteCategory,
 } = require('../controllers/category.controller');
+const { protect } = require('../middleware/auth.middleware');
+
+// PROTECT ALL CATEGORY ROUTES - REQUIRE AUTHENTICATION
+router.use(protect);
 
 // GET /api/categories - Get all categories
 router.get('/', getAllCategories);

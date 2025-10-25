@@ -1,3 +1,5 @@
+//category.model.js
+
 const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema(
@@ -12,6 +14,12 @@ const categorySchema = new mongoose.Schema(
       required: [true, 'Category type is required'],
       enum: ['income', 'expense'],
     },
+    // ADD USER FIELD
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'User is required'],
+    },
   },
   {
     timestamps: true,
@@ -20,6 +28,7 @@ const categorySchema = new mongoose.Schema(
 
 // Index for faster queries
 categorySchema.index({ type: 1 });
+categorySchema.index({ user: 1 }); // ADD INDEX FOR USER
 
 const Category = mongoose.model('Category', categorySchema);
 

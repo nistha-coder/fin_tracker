@@ -1,3 +1,5 @@
+//trasaction.model.js
+
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema(
@@ -26,6 +28,12 @@ const transactionSchema = new mongoose.Schema(
       ref: 'Category',
       required: [true, 'Category is required'],
     },
+    // ADD USER FIELD
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'User is required'],
+    },
   },
   {
     timestamps: true,
@@ -35,6 +43,7 @@ const transactionSchema = new mongoose.Schema(
 // Index for faster queries
 transactionSchema.index({ date: -1 });
 transactionSchema.index({ type: 1 });
+transactionSchema.index({ user: 1 }); // ADD INDEX FOR USER
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
