@@ -1,0 +1,9 @@
+[build]
+  base = "client"
+  publish = "client/build"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://fin-tracker-2-odkq.onrender.com/api/:splat"
+  status = 200
