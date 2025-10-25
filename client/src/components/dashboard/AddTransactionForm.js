@@ -1,11 +1,8 @@
-//addTrandactionForm.js
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { FaPlus, FaExclamationTriangle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { createTransaction } from '../../api/transactionsApi';
+import { createTransaction, getDashboardStats } from '../../api/transactionsApi';
 import { getCategoriesByType } from '../../api/categoriesApi';
-import { getDashboardStats } from '../../api/transactionsApi';
 
 const AddTransactionForm = ({ onTransactionAdded }) => {
   const [formData, setFormData] = useState({
@@ -21,7 +18,6 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
   const [stats, setStats] = useState(null);
   const [showWarning, setShowWarning] = useState(false);
 
-  // Load current stats
   const loadStats = useCallback(async () => {
     try {
       const response = await getDashboardStats();
@@ -48,17 +44,11 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
     loadStats();
   }, [loadCategories, loadStats]);
 
-  // Check if expense exceeds available balance
   useEffect(() => {
     if (formData.type === 'expense' && formData.amount && stats) {
       const expenseAmount = parseFloat(formData.amount);
       const availableBalance = stats.totalBalance;
-      
-      if (expenseAmount > availableBalance) {
-        setShowWarning(true);
-      } else {
-        setShowWarning(false);
-      }
+      setShowWarning(expenseAmount > availableBalance);
     } else {
       setShowWarning(false);
     }
@@ -71,27 +61,23 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.description || !formData.amount || !formData.category) {
       toast.error('Please fill in all fields');
       return;
     }
-
     const expenseAmount = parseFloat(formData.amount);
-
-    // Validate expense against total balance
     if (formData.type === 'expense' && stats) {
       const availableBalance = stats.totalBalance;
-      
       if (expenseAmount > availableBalance) {
         toast.error(
-          ❌ Insufficient Balance!\nAvailable: ₹${availableBalance.toFixed(2)}\nTrying to spend: ₹${expenseAmount.toFixed(2)},
+          `❌ Insufficient Balance!\nAvailable: ₹${availableBalance.toFixed(
+            2
+          )}\nTrying to spend: ₹${expenseAmount.toFixed(2)}`,
           { autoClose: 5000 }
         );
         return;
       }
     }
-
     setLoading(true);
     try {
       await createTransaction(formData);
@@ -104,7 +90,7 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
         category: categories[0]?._id || '',
       });
       onTransactionAdded();
-      loadStats(); // Refresh stats after adding transaction
+      loadStats();
     } catch (error) {
       toast.error(error.message || 'Failed to add transaction');
     } finally {
@@ -121,15 +107,20 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
         </h2>
         {stats && (
           <div className="text-right">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Available Balance</p>
-            <p className={text-xl font-bold ${stats.totalBalance >= 0 ? 'text-green-600' : 'text-red-600'}}>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">
+              Available Balance
+            </p>
+            <p
+              className={`text-xl font-bold ${
+                stats.totalBalance >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
               ₹{stats.totalBalance.toFixed(2)}
             </p>
           </div>
         )}
       </div>
 
-      {/* Balance Warning */}
       {showWarning && stats && (
         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
           <div className="flex items-start">
@@ -152,11 +143,8 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Description */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Description
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
             <input
               type="text"
               name="description"
@@ -166,11 +154,8 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none"
             />
           </div>
-          {/* Amount */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Amount (₹)
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Amount (₹)</label>
             <input
               type="number"
               name="amount"
@@ -188,11 +173,8 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Type */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Transaction Type
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">Transaction Type</label>
             <div className="flex space-x-4">
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input
@@ -218,11 +200,8 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
               </label>
             </div>
           </div>
-          {/* Category */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Category
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
             <select
               name="category"
               value={formData.category}
@@ -238,11 +217,8 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
             </select>
           </div>
         </div>
-        {/* Date */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Date
-          </label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
           <input
             type="date"
             name="date"
@@ -251,7 +227,6 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none"
           />
         </div>
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading || showWarning}
@@ -262,9 +237,7 @@ const AddTransactionForm = ({ onTransactionAdded }) => {
           } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           <FaPlus />
-          <span>
-            {loading ? 'Adding...' : showWarning ? 'Insufficient Balance' : 'Add Transaction'}
-          </span>
+          <span>{loading ? 'Adding...' : showWarning ? 'Insufficient Balance' : 'Add Transaction'}</span>
         </button>
       </form>
     </div>
