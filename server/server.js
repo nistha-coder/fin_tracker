@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const path = require('path');
 
 const app = express();
 
@@ -26,27 +25,12 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// ---------------------------
-// ✅ Serve frontend static files (React build)
-// ---------------------------
-const buildPath = path.join(__dirname, '../client/build');
-app.use(express.static(buildPath));
-
-// ✅ Catch-all route for SPA (for React Router)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(buildPath, 'index.html'));
-});
-
-// ---------------------------
 // Health check (optional)
-// ---------------------------
 app.get('/api/health', (req, res) => {
   res.json({ message: 'FinTrack API is running!' });
 });
 
-// ---------------------------
 // Error handling middleware
-// ---------------------------
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
@@ -56,9 +40,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ---------------------------
 // Start Server
-// ---------------------------
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
