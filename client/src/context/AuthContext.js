@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import api from '../api/axiosConfig'; // USE THE CONFIGURED AXIOS INSTANCE
 
 const AuthContext = createContext();
 
@@ -28,11 +28,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Register user
-  // --- FIX #1: Changed 'name' to 'username' to match SignupPage and Backend ---
-  // --- FIX #2: Changed URL to '/api/auth/register' to use the proxy ---
   const register = async (username, email, password) => {
     try {
-      const response = await axios.post('/api/auth/register', {
+      const response = await api.post('/auth/register', {
         username,
         email,
         password,
@@ -45,16 +43,17 @@ export const AuthProvider = ({ children }) => {
         navigate('/dashboard');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      const errorMessage = error.response?.data?.message || 'Registration failed';
+      toast.error(errorMessage);
+      console.error('Registration error:', error);
       throw error;
     }
   };
 
   // Login user
-  // --- FIX #3: Changed URL to '/api/auth/login' to use the proxy ---
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/auth/login', {
+      const response = await api.post('/auth/login', {
         email,
         password,
       });
@@ -66,7 +65,9 @@ export const AuthProvider = ({ children }) => {
         navigate('/dashboard');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      const errorMessage = error.response?.data?.message || 'Login failed';
+      toast.error(errorMessage);
+      console.error('Login error:', error);
       throw error;
     }
   };
@@ -82,10 +83,11 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
-    register, // This function is named 'register'
+    register,
     login,
     logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
