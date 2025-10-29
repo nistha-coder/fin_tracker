@@ -1,39 +1,43 @@
-🚀 FinTrack — Modern Personal Finance Tracker
+#🚀 FinTrack — Modern Personal Finance Tracker
+
 FinTrack is a comprehensive finance management web app designed to help you track income, expenses, and analyze your financial habits securely and efficiently. Built with the MERN stack for a smooth user experience and robust backend.
 
 
 🌟 Key Features
-User Authentication & Security
-Secure signup and login with JWT tokens
 
-User-specific encrypted data storage
+1.User Authentication & Security
 
-Dynamic Dashboard
+2.Secure signup and login with JWT tokens
+
+3.User-specific encrypted data storage
+
+4.Dynamic Dashboard
 Real-time statistics on income, expenses, and savings
 
-Category-wise and trend-wise financial analysis
+5.Category-wise and trend-wise financial analysis
 
-Transaction Management
+6.Transaction Management
 Add, update, view, and delete income/expense transactions
 
-Filter transactions by category, date, and type
+7.Filter transactions by category, date, and type
 
-Category Organization
+8.Category Organization
 Manage customizable categories to organize your finances
 
-Categories linked uniquely to user accounts
+9.Categories linked uniquely to user accounts
 
-Responsive UI
+10.Responsive UI
 Mobile-friendly interface built with React and Tailwind CSS
 
-Seamless experience across all devices
+11.Seamless experience across all devices
 
-RESTful Backend API
+12.RESTful Backend API
 Secure Node.js + Express backend with MongoDB database
 
-Endpoints for authentication, transactions, categories, and dashboard data
+13.Endpoints for authentication, transactions, categories, and dashboard data
 
-Cloud Hosting
+14.Cloud Hosting
+
 Frontend deployed on Netlify
 
 Backend API hosted on Render
@@ -42,7 +46,9 @@ Database powered by MongoDB Atlas
 
 
 🛠️ Technology Stack
-Layer           |  Technologies Used                    
+
+Layer           |  Technologies Used    
+
 ----------------+---------------------------------------
 Frontend        |  React, Axios, Tailwind CSS, Netlify  
 Backend         |  Node.js, Express.js, JWT             
@@ -52,38 +58,43 @@ Authentication  |  JWT tokens, bcrypt (password hashing)
 
 
 💻 Getting Started — Local Development
+
 1. Clone Repository
 bash
 git clone https://github.com/nistha-coder/fin_tracker.git
 cd fin_tracker
+
 2. Backend Setup
 bash
 cd server
 npm install
-Create a .env file inside /server with:
 
+3.Create a .env file inside /server with:
 text
 MONGO_URI=your-mongodb-connection-string
 JWT_SECRET=your-secret-key
 PORT=5001
-Start backend server:
 
+4.Start backend server:
 bash
 npm start
-# Default URL: http://localhost:5001
-3. Frontend Setup
+Default URL: http://localhost:5001
+
+5. Frontend Setup
 bash
 cd ../client
 npm install
-(Optional) Create .env in client with:
 
+6.(Optional) Create .env in client with:
 text
 REACT_APP_API_URL=http://localhost:5001/api
-Start frontend:
 
+7.Start frontend:
 bash
 npm start
-# Default URL: http://localhost:3000
+Default URL: http://localhost:3000
+
+
 🌱 Initial Data — Seed Default Categories
 To use the categories feature, create initial categories via API or directly in MongoDB Atlas:
 
@@ -100,6 +111,7 @@ curl -X POST https://YOUR_BACKEND_URL/api/categories \
 
   
 🗂️ Project Structure
+
 text
 fin_tracker/
 │
@@ -120,6 +132,7 @@ fin_tracker/
 
     
 🔒 Security & Environment
+
 Passwords hashed securely with bcrypt
 
 JSON Web Tokens (JWT) used for authentication and session protection
@@ -128,12 +141,14 @@ Sensitive configs managed via .env files
 
 
 🌍 Live Deployment
+
 Frontend (Netlify): https://fintract-3.netlify.app
 
 Backend API (Render): https://fin-tracker-2-odkq.onrender.com
 
 
 🤝 Contributing
+
 We welcome contributions!
 
 Open an Issue for bugs or feature requests
